@@ -32,3 +32,5 @@
 ## Notes
 
 - Validation iteration 1 passed all items; no clarification markers or follow-up changes required.
+- Validation iteration 2 passed all items after clarifying independent multi-quote favorites and
+  preserving the exclusion of a separate favorites-list view.
