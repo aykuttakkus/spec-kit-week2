@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Discover and save a thoughtful quote.">
+    <title>Quote of the Day</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="quote-page">
+      <p class="eyebrow">A small pause for a big thought</p>
+      <h1>Quote of the Day</h1>
+
+      <section class="quote-card" aria-label="Quote">
+        <figure id="quote-region" aria-live="polite" aria-atomic="true">
+          <blockquote>
+            <p id="quote-text"></p>
+          </blockquote>
+          <figcaption id="quote-attribution"></figcaption>
+        </figure>
+
+        <p id="unavailable-message" class="unavailable" hidden>
+          No quotes are available right now.
+        </p>
+
+        <div class="actions">
+          <button id="new-quote" type="button" disabled>New quote</button>
+          <button id="favorite-quote" class="favorite-button" type="button" aria-pressed="false" disabled>
+            <span class="favorite-icon" aria-hidden="true">♡</span>
+            <span>Favorite quote</span>
+          </button>
+        </div>
+
+        <p id="status-message" class="status" role="status" aria-live="polite" aria-atomic="true"></p>
+      </section>
+    </main>
+
+    <script type="module" src="src/app.js"></script>
+  </body>
+</html>

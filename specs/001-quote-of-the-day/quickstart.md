@@ -80,3 +80,17 @@ data and communicates a non-blocking warning when persistence is unavailable.
 - Automated accessibility scans report no detectable A/AA violations in initial and interacted states.
 - Manual checks confirm dynamic announcements, focus visibility, long-content wrapping, and reflow.
 - No production request depends on a backend or external quote service.
+
+## Validation evidence — 2026-10-07
+
+- `npm run test:all` passed: 18 unit tests and 14 Chromium browser tests, with zero failures.
+- Axe reported no detectable A/AA violations in the initial or interacted page states.
+- Browser assertions passed for keyboard order, Enter and Space activation, visible focus, focus
+  retention, stable favorite naming and pressed state, polite atomic quote updates, 320 CSS-pixel
+  reflow, simulated 400% zoom, and long unbroken content.
+- Degraded-state assertions passed for malformed JSON, blocked storage, session-only fallback,
+  non-blocking warnings, and preservation of unrelated origin storage.
+- Visual inspection confirmed the desktop layout, complete quote rendering, responsive card,
+  distinct favorite states, and readable focus/action controls. Accessibility-tree inspection after
+  interaction confirmed updated quote content, favorite state, and status messaging.
+- Production code performs no network requests and contains no backend or external quote dependency.

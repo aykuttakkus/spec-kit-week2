@@ -20,10 +20,10 @@ an independent increment.
 
 **Purpose**: Establish the static application and repeatable quality commands.
 
-- [ ] T001 Create `package.json` as an ES module project with `test`, `test:e2e`, `test:all`, and `serve` scripts plus development-only Playwright and axe dependencies
-- [ ] T002 [P] Configure Chromium browser tests and the test-only static server in `playwright.config.js` and `tests/static-server.js`
-- [ ] T003 [P] Add dependency, browser-report, and test-result exclusions to `.gitignore`
-- [ ] T004 Install the declared development dependencies and record the resolved versions in `package-lock.json`
+- [X] T001 Create `package.json` as an ES module project with `test`, `test:e2e`, `test:all`, and `serve` scripts plus development-only Playwright and axe dependencies
+- [X] T002 [P] Configure Chromium browser tests and the test-only static server in `playwright.config.js` and `tests/static-server.js`
+- [X] T003 [P] Add dependency, browser-report, and test-result exclusions to `.gitignore`
+- [X] T004 Install the declared development dependencies and record the resolved versions in `package-lock.json`
 
 ---
 
@@ -34,9 +34,9 @@ helpers required by every user story.
 
 **Critical**: No user-story implementation begins until this phase is complete.
 
-- [ ] T005 [P] Create the semantic page shell in `index.html` with one `main`, one `h1`, a `figure` containing `blockquote` and `figcaption`, a pre-existing polite atomic quote region, native `New quote` and `Favorite quote` buttons, and a non-blocking status region
-- [ ] T006 [P] Create the responsive baseline in `styles.css` with visible focus, practical 44-by-44 CSS-pixel controls, full quote wrapping, no fixed quote height, 320 CSS-pixel reflow, and reduced-motion-safe defaults
-- [ ] T007 [P] Create deterministic browser navigation, random-selection control, clean-context, and storage-seeding helpers in `tests/e2e/helpers.js`
+- [X] T005 [P] Create the semantic page shell in `index.html` with one `main`, one `h1`, a `figure` containing `blockquote` and `figcaption`, a pre-existing polite atomic quote region, native `New quote` and `Favorite quote` buttons, and a non-blocking status region
+- [X] T006 [P] Create the responsive baseline in `styles.css` with visible focus, practical 44-by-44 CSS-pixel controls, full quote wrapping, no fixed quote height, 320 CSS-pixel reflow, and reduced-motion-safe defaults
+- [X] T007 [P] Create deterministic browser navigation, random-selection control, clean-context, and storage-seeding helpers in `tests/e2e/helpers.js`
 
 **Checkpoint**: The page shell can be served, and unit and browser test commands can discover tests.
 
@@ -53,14 +53,14 @@ and disables quote-dependent controls.
 
 ### Tests for User Story 1
 
-- [ ] T008 [P] [US1] Write failing unit tests for empty, single-entry, multi-entry, deterministic boundary selection, and catalog membership in `tests/unit/quote-selection.test.js`
-- [ ] T009 [P] [US1] Write failing browser tests for initial quote rendering, `Unknown` attribution normalization, and the empty-catalog disabled state in `tests/e2e/quote-page.spec.js`
+- [X] T008 [P] [US1] Write failing unit tests for empty, single-entry, multi-entry, deterministic boundary selection, and catalog membership in `tests/unit/quote-selection.test.js`
+- [X] T009 [P] [US1] Write failing browser tests for initial quote rendering, `Unknown` attribution normalization, and the empty-catalog disabled state in `tests/e2e/quote-page.spec.js`
 
 ### Implementation for User Story 1
 
-- [ ] T010 [US1] Create at least five catalog entries in `src/quotes.js` where `id` is "Stable, non-empty, unique across the catalog; never derived from array position", `text` is "Non-empty quote content; rendered in full without truncation", and `attribution` has a non-empty display value normalized to `Unknown` when missing
-- [ ] T011 [US1] Implement catalog validation and injectable initial random selection with empty and single-entry handling in `src/quote-selection.js`
-- [ ] T012 [US1] Implement page initialization, quote rendering, attribution normalization, and the empty-catalog unavailable state in `src/app.js`
+- [X] T010 [US1] Create at least five catalog entries in `src/quotes.js` where `id` is "Stable, non-empty, unique across the catalog; never derived from array position", `text` is "Non-empty quote content; rendered in full without truncation", and `attribution` has a non-empty display value normalized to `Unknown` when missing
+- [X] T011 [US1] Implement catalog validation and injectable initial random selection with empty and single-entry handling in `src/quote-selection.js`
+- [X] T012 [US1] Implement page initialization, quote rendering, attribution normalization, and the empty-catalog unavailable state in `src/app.js`
 
 **Checkpoint**: User Story 1 passes its unit and browser tests and is independently demonstrable as
 a quote-of-the-day MVP.
@@ -77,13 +77,13 @@ catalog quote appears without navigation; with one catalog entry, verify the pag
 
 ### Tests for User Story 2
 
-- [ ] T013 [P] [US2] Add failing unit cases proving two-or-more-entry selection excludes the current quote without retries and one-entry selection remains stable in `tests/unit/quote-selection.test.js`
-- [ ] T014 [P] [US2] Add failing pointer and keyboard browser cases for content replacement, one-second completion, focus retention, and one polite atomic announcement in `tests/e2e/quote-page.spec.js`
+- [X] T013 [P] [US2] Add failing unit cases proving two-or-more-entry selection excludes the current quote without retries and one-entry selection remains stable in `tests/unit/quote-selection.test.js`
+- [X] T014 [P] [US2] Add failing pointer and keyboard browser cases for content replacement, one-second completion, focus retention, and one polite atomic announcement in `tests/e2e/quote-page.spec.js`
 
 ### Implementation for User Story 2
 
-- [ ] T015 [US2] Extend the pure selector to accept `currentQuoteId` and select from all other entries with injected randomness in `src/quote-selection.js`
-- [ ] T016 [US2] Wire `New quote` pointer and native keyboard activation, content updates, focus retention, and favorite-state refresh hooks in `src/app.js`
+- [X] T015 [US2] Extend the pure selector to accept `currentQuoteId` and select from all other entries with injected randomness in `src/quote-selection.js`
+- [X] T016 [US2] Wire `New quote` pointer and native keyboard activation, content updates, focus retention, and favorite-state refresh hooks in `src/app.js`
 
 **Checkpoint**: User Story 2 passes independently with multi-entry and single-entry catalogs while
 User Story 1 remains green.
@@ -100,14 +100,14 @@ verify A remains favorited while B does not.
 
 ### Tests for User Story 3
 
-- [ ] T017 [P] [US3] Write failing unit tests for the version-1 schema, missing and malformed values, unsupported versions, unknown and duplicate IDs, sorted serialization, storage exceptions, idempotent add/remove, multi-favorite reload, and remove-one-preserves-others behavior in `tests/unit/favorites.test.js`
-- [ ] T018 [P] [US3] Add failing browser tests for stable `aria-pressed`, two independently persisted favorites, removing one while preserving another after reload, and no separate favorites-list view in `tests/e2e/quote-page.spec.js`
+- [X] T017 [P] [US3] Write failing unit tests for the version-1 schema, missing and malformed values, unsupported versions, unknown and duplicate IDs, sorted serialization, storage exceptions, idempotent add/remove, multi-favorite reload, and remove-one-preserves-others behavior in `tests/unit/favorites.test.js`
+- [X] T018 [P] [US3] Add failing browser tests for stable `aria-pressed`, two independently persisted favorites, removing one while preserving another after reload, and no separate favorites-list view in `tests/e2e/quote-page.spec.js`
 
 ### Implementation for User Story 3
 
-- [ ] T019 [US3] Implement the `quote-of-the-day:favorites` version-1 persistence boundary with injectable storage, validated known IDs, unique sorted `quoteIds`, safe reads, single-write targeted mutations, and in-memory failure fallback in `src/favorites.js`
-- [ ] T020 [US3] Integrate favorite loading, per-quote pressed-state derivation, targeted add/remove actions, reload persistence, and non-blocking failure messages in `src/app.js`
-- [ ] T021 [US3] Add non-color-only favorite styling for true and false pressed states without changing the stable `Favorite quote` accessible name in `styles.css`
+- [X] T019 [US3] Implement the `quote-of-the-day:favorites` version-1 persistence boundary with injectable storage, validated known IDs, unique sorted `quoteIds`, safe reads, single-write targeted mutations, and in-memory failure fallback in `src/favorites.js`
+- [X] T020 [US3] Integrate favorite loading, per-quote pressed-state derivation, targeted add/remove actions, reload persistence, and non-blocking failure messages in `src/app.js`
+- [X] T021 [US3] Add non-color-only favorite styling for true and false pressed states without changing the stable `Favorite quote` accessible name in `styles.css`
 
 **Checkpoint**: All three user stories pass independently, and unfavoriting one quote never changes
 another quote's state.
@@ -118,10 +118,10 @@ another quote's state.
 
 **Purpose**: Complete accessibility, degraded-state, documentation, and full quality-gate coverage.
 
-- [ ] T022 [P] Add axe scans for initial and interacted states plus explicit keyboard order, Enter/Space activation, visible focus, focus retention, live-region, pressed-state, 320 CSS-pixel, 400% zoom, and long-quote assertions in `tests/e2e/accessibility.spec.js`
-- [ ] T023 [P] Add browser coverage for malformed saved JSON, unavailable storage, non-blocking persistence warnings, continued quote discovery, and no unrelated storage clearing in `tests/e2e/quote-page.spec.js`
-- [ ] T024 [P] Document static preview, unit, browser, full-gate, and manual accessibility commands in `README.md`
-- [ ] T025 Run `npm run test:all`, complete the manual dynamic-announcement and reflow checks, and record the final validation evidence in `specs/001-quote-of-the-day/quickstart.md`
+- [X] T022 [P] Add axe scans for initial and interacted states plus explicit keyboard order, Enter/Space activation, visible focus, focus retention, live-region, pressed-state, 320 CSS-pixel, 400% zoom, and long-quote assertions in `tests/e2e/accessibility.spec.js`
+- [X] T023 [P] Add browser coverage for malformed saved JSON, unavailable storage, non-blocking persistence warnings, continued quote discovery, and no unrelated storage clearing in `tests/e2e/quote-page.spec.js`
+- [X] T024 [P] Document static preview, unit, browser, full-gate, and manual accessibility commands in `README.md`
+- [X] T025 Run `npm run test:all`, complete the manual dynamic-announcement and reflow checks, and record the final validation evidence in `specs/001-quote-of-the-day/quickstart.md`
 
 **Checkpoint**: The complete quality gate passes with no constitution exceptions, no backend or
 external quote requests, and no unresolved validation notes.
