@@ -1,12 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 import { quotes } from '../../src/quotes.js';
-import {
-  STORAGE_KEY,
-  openCleanPage,
-  useCatalog,
-  useDeterministicRandom,
-} from './helpers.js';
+import { STORAGE_KEY, openCleanPage, useCatalog, useDeterministicRandom } from './helpers.js';
 
 test.beforeEach(async ({ page }) => {
   await useDeterministicRandom(page, 0);
@@ -45,7 +40,9 @@ test('New quote replaces content without navigation and retains focus', async ({
   await openCleanPage(page);
   const button = page.getByRole('button', { name: 'New quote' });
   const originalId = await page.locator('#quote-region').getAttribute('data-quote-id');
-  const navigationCount = await page.evaluate(() => performance.getEntriesByType('navigation').length);
+  const navigationCount = await page.evaluate(
+    () => performance.getEntriesByType('navigation').length,
+  );
 
   const startedAt = Date.now();
   await button.click();
@@ -53,7 +50,9 @@ test('New quote replaces content without navigation and retains focus', async ({
   await expect(page.locator('#quote-region')).not.toHaveAttribute('data-quote-id', originalId);
   expect(Date.now() - startedAt).toBeLessThan(1000);
   await expect(button).toBeFocused();
-  expect(await page.evaluate(() => performance.getEntriesByType('navigation').length)).toBe(navigationCount);
+  expect(await page.evaluate(() => performance.getEntriesByType('navigation').length)).toBe(
+    navigationCount,
+  );
   await expect(page.locator('#quote-region')).toHaveAttribute('aria-live', 'polite');
   await expect(page.locator('#quote-region')).toHaveAttribute('aria-atomic', 'true');
 });
@@ -114,20 +113,27 @@ test('persists multiple favorites and removes only the selected quote', async ({
   await expect(page.getByRole('heading', { name: /favorites/i })).toHaveCount(0);
 });
 
-test('malformed favorite data falls back safely and keeps quote discovery usable', async ({ page }) => {
+test('malformed favorite data falls back safely and keeps quote discovery usable', async ({
+  page,
+}) => {
   await page.addInitScript((key) => {
     localStorage.setItem(key, '{malformed-json');
   }, STORAGE_KEY);
   await page.goto('/');
 
   await expect(page.locator('#quote-text')).not.toBeEmpty();
-  await expect(page.getByRole('button', { name: 'Favorite quote' })).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.getByRole('button', { name: 'Favorite quote' })).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  );
   const originalId = await page.locator('#quote-region').getAttribute('data-quote-id');
   await page.getByRole('button', { name: 'New quote' }).click();
   await expect(page.locator('#quote-region')).not.toHaveAttribute('data-quote-id', originalId);
 });
 
-test('unavailable storage keeps session favorites usable and warns without blocking', async ({ page }) => {
+test('unavailable storage keeps session favorites usable and warns without blocking', async ({
+  page,
+}) => {
   await page.addInitScript(() => {
     Storage.prototype.getItem = () => {
       throw new Error('Storage blocked');
@@ -139,12 +145,79 @@ test('unavailable storage keeps session favorites usable and warns without block
   await page.goto('/');
 
   const favorite = page.getByRole('button', { name: 'Favorite quote' });
-  await expect(page.locator('#status-message')).toContainText('cannot be saved');
+  await expect(page.locator('#status-message')).toContainText('could not be read');
   await favorite.click();
   await expect(favorite).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#status-message')).toContainText('could not be saved');
   await expect(page.locator('#status-message')).toContainText('only last for this visit');
   await page.getByRole('button', { name: 'New quote' }).click();
   await expect(page.locator('#quote-text')).not.toBeEmpty();
+});
+
+test('write failures retain independent favorites for the current visit', async ({ page }) => {
+  await page.addInitScript(() => {
+    Storage.prototype.setItem = () => {
+      throw new Error('Storage quota exceeded');
+    };
+  });
+  await page.goto('/');
+
+  const favorite = page.getByRole('button', { name: 'Favorite quote' });
+  const next = page.getByRole('button', { name: 'New quote' });
+
+  await favorite.click();
+  await expect(page.locator('#status-message')).toContainText('could not be saved');
+  await next.click();
+  await favorite.click();
+
+  await next.click();
+  await expect(page.locator('#quote-region')).toHaveAttribute('data-quote-id', quotes[0].id);
+  await expect(favorite).toHaveAttribute('aria-pressed', 'true');
+
+  await next.click();
+  await favorite.click();
+  await expect(favorite).toHaveAttribute('aria-pressed', 'false');
+
+  await next.click();
+  await expect(page.locator('#quote-region')).toHaveAttribute('data-quote-id', quotes[0].id);
+  await expect(favorite).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('meets sampled initial-load and new-quote response targets', async ({ page }) => {
+  test.setTimeout(60_000);
+  const sampleCount = 20;
+  const initialLoadDurations = [];
+
+  for (let sample = 0; sample < sampleCount; sample += 1) {
+    const startedAt = Date.now();
+    await page.goto(`/?performance-sample=${sample}`);
+    await expect(page.locator('#quote-text')).not.toBeEmpty();
+    initialLoadDurations.push(Date.now() - startedAt);
+  }
+
+  const quoteChangeDurations = [];
+  const next = page.getByRole('button', { name: 'New quote' });
+  for (let sample = 0; sample < sampleCount; sample += 1) {
+    const previousId = await page.locator('#quote-region').getAttribute('data-quote-id');
+    const startedAt = Date.now();
+    await next.click();
+    await expect(page.locator('#quote-region')).not.toHaveAttribute('data-quote-id', previousId);
+    quoteChangeDurations.push(Date.now() - startedAt);
+  }
+
+  const initialLoadPassRate =
+    initialLoadDurations.filter((duration) => duration <= 2_000).length / sampleCount;
+  const quoteChangePassRate =
+    quoteChangeDurations.filter((duration) => duration <= 1_000).length / sampleCount;
+
+  expect(
+    initialLoadPassRate,
+    `initial-load samples: ${initialLoadDurations.join(', ')} ms`,
+  ).toBeGreaterThanOrEqual(0.95);
+  expect(
+    quoteChangePassRate,
+    `new-quote samples: ${quoteChangeDurations.join(', ')} ms`,
+  ).toBeGreaterThanOrEqual(0.95);
 });
 
 test('favorite recovery never clears unrelated origin storage', async ({ page }) => {

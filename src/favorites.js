@@ -9,6 +9,15 @@ export function createFavoritesStore({ storage, knownQuoteIds }) {
   const knownIds = new Set(knownQuoteIds);
   let favorites = new Set();
   let persistenceAvailable = true;
+  let hasUnpersistedChanges = false;
+  let lastFailure = null;
+
+  function failure(operation, error) {
+    return {
+      operation,
+      message: error instanceof Error ? error.message : String(error),
+    };
+  }
 
   function decode(rawValue) {
     if (rawValue === null) {
@@ -17,30 +26,29 @@ export function createFavoritesStore({ storage, knownQuoteIds }) {
 
     try {
       const document = JSON.parse(rawValue);
-      if (
-        document?.version !== SCHEMA_VERSION
-        || !Array.isArray(document.quoteIds)
-      ) {
+      if (document?.version !== SCHEMA_VERSION || !Array.isArray(document.quoteIds)) {
         return new Set();
       }
 
-      return new Set(
-        document.quoteIds.filter(
-          (id) => typeof id === 'string' && knownIds.has(id),
-        ),
-      );
+      return new Set(document.quoteIds.filter((id) => typeof id === 'string' && knownIds.has(id)));
     } catch {
       return new Set();
     }
   }
 
   function readLatest() {
+    if (hasUnpersistedChanges) {
+      return clone(favorites);
+    }
+
     try {
       const latest = decode(storage.getItem(FAVORITES_STORAGE_KEY));
       persistenceAvailable = true;
+      lastFailure = null;
       return latest;
-    } catch {
+    } catch (error) {
       persistenceAvailable = false;
+      lastFailure = failure('read', error);
       return clone(favorites);
     }
   }
@@ -49,19 +57,21 @@ export function createFavoritesStore({ storage, knownQuoteIds }) {
     return {
       favorites: clone(favorites),
       persistenceAvailable,
+      failure: lastFailure ? { ...lastFailure } : null,
     };
   }
 
   function persist() {
     const quoteIds = [...favorites].sort();
     try {
-      storage.setItem(
-        FAVORITES_STORAGE_KEY,
-        JSON.stringify({ version: SCHEMA_VERSION, quoteIds }),
-      );
+      storage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify({ version: SCHEMA_VERSION, quoteIds }));
       persistenceAvailable = true;
-    } catch {
+      hasUnpersistedChanges = false;
+      lastFailure = null;
+    } catch (error) {
       persistenceAvailable = false;
+      hasUnpersistedChanges = true;
+      lastFailure = failure('write', error);
     }
     return result();
   }

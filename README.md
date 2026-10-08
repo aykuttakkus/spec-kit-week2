@@ -27,14 +27,21 @@ can serve `index.html`, `styles.css`, and `src/` from any static host.
 ## Quality commands
 
 ```sh
+npm run format
+npm run format:check
+npm run lint
 npm test
 npm run test:e2e
 npm run test:all
 ```
 
+- `npm run format` formats the maintained HTML, CSS, JavaScript, JSON, and Markdown files.
+- `npm run format:check` verifies formatting without changing files.
+- `npm run lint` runs ESLint static analysis over the JavaScript codebase.
 - `npm test` runs deterministic domain and persistence tests with Node's built-in test runner.
 - `npm run test:e2e` runs the Chromium interaction and accessibility contract through Playwright.
-- `npm run test:all` runs the complete merge gate.
+- `npm run test:all` runs formatting verification, static analysis, unit tests, and browser tests as
+  the complete merge gate.
 
 The browser suite covers initial rendering, non-repeating quote selection, keyboard operation,
 focus retention, multi-favorite persistence, independent unfavoriting, malformed/unavailable

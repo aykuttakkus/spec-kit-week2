@@ -7,7 +7,9 @@ test.beforeEach(async ({ page }) => {
   await useDeterministicRandom(page, 0);
 });
 
-test('initial and interacted states have no detectable accessibility violations', async ({ page }) => {
+test('initial and interacted states have no detectable accessibility violations', async ({
+  page,
+}) => {
   await openCleanPage(page);
 
   let results = await new AxeBuilder({ page }).analyze();
@@ -19,7 +21,9 @@ test('initial and interacted states have no detectable accessibility violations'
   expect(results.violations).toEqual([]);
 });
 
-test('logical keyboard order, activation, focus, and pressed state remain visible', async ({ page }) => {
+test('logical keyboard order, activation, focus, and pressed state remain visible', async ({
+  page,
+}) => {
   await openCleanPage(page);
   const next = page.getByRole('button', { name: 'New quote' });
   const favorite = page.getByRole('button', { name: 'Favorite quote' });

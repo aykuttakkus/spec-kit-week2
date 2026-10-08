@@ -45,6 +45,11 @@ const favoriteStore = createFavoritesStore({
 const loadedFavorites = favoriteStore.load();
 let currentQuote = selectQuote(catalog, null, Math.random);
 
+function persistenceFailureMessage(storageFailure) {
+  const action = storageFailure?.operation === 'read' ? 'read' : 'saved';
+  return `Favorites could not be ${action}. Changes will only last for this visit.`;
+}
+
 function renderFavoriteState() {
   const isFavorite = Boolean(currentQuote && favoriteStore.isFavorite(currentQuote.id));
   elements.favoriteButton.setAttribute('aria-pressed', String(isFavorite));
@@ -90,7 +95,7 @@ function toggleFavorite() {
   const action = wasFavorite ? 'removed from favorites' : 'added to favorites';
   const persistenceNote = update.persistenceAvailable
     ? ''
-    : ' This preference will only last for this visit.';
+    : ` ${persistenceFailureMessage(update.failure)}`;
   elements.status.textContent = `Quote ${action}.${persistenceNote}`;
 }
 
@@ -100,5 +105,5 @@ elements.favoriteButton.addEventListener('click', toggleFavorite);
 renderQuote();
 
 if (!loadedFavorites.persistenceAvailable) {
-  elements.status.textContent = 'Favorites cannot be saved right now. Changes will only last for this visit.';
+  elements.status.textContent = persistenceFailureMessage(loadedFavorites.failure);
 }

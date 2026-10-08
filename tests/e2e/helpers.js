@@ -13,9 +13,12 @@ export async function useCatalog(page, catalog) {
 }
 
 export async function seedFavorites(page, quoteIds) {
-  await page.addInitScript(({ key, ids }) => {
-    localStorage.setItem(key, JSON.stringify({ version: 1, quoteIds: ids }));
-  }, { key: STORAGE_KEY, ids: quoteIds });
+  await page.addInitScript(
+    ({ key, ids }) => {
+      localStorage.setItem(key, JSON.stringify({ version: 1, quoteIds: ids }));
+    },
+    { key: STORAGE_KEY, ids: quoteIds },
+  );
 }
 
 export async function openCleanPage(page) {

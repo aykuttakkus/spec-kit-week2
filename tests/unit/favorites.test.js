@@ -21,7 +21,10 @@ function createStorage(initial = {}) {
 }
 
 test('missing storage loads an empty favorite set', () => {
-  const store = createFavoritesStore({ storage: createStorage(), knownQuoteIds });
+  const store = createFavoritesStore({
+    storage: createStorage(),
+    knownQuoteIds,
+  });
   const result = store.load();
 
   assert.deepEqual([...result.favorites], []);
@@ -109,16 +112,28 @@ test('read exceptions preserve current-session functionality', () => {
   };
   const store = createFavoritesStore({ storage, knownQuoteIds });
 
-  assert.equal(store.load().persistenceAvailable, false);
+  const loaded = store.load();
+  assert.equal(loaded.persistenceAvailable, false);
+  assert.deepEqual(loaded.failure, {
+    operation: 'read',
+    message: 'blocked',
+  });
   const result = store.add('quote-a');
   assert.equal(result.persistenceAvailable, false);
+  assert.deepEqual(result.failure, {
+    operation: 'write',
+    message: 'blocked',
+  });
   assert.equal(store.isFavorite('quote-a'), true);
 });
 
 test('a failed write does not delete unrelated in-memory favorites', () => {
   let writes = 0;
   const storage = createStorage({
-    [FAVORITES_STORAGE_KEY]: JSON.stringify({ version: 1, quoteIds: ['quote-a', 'quote-b'] }),
+    [FAVORITES_STORAGE_KEY]: JSON.stringify({
+      version: 1,
+      quoteIds: ['quote-a', 'quote-b'],
+    }),
   });
   storage.setItem = () => {
     writes += 1;
@@ -130,5 +145,32 @@ test('a failed write does not delete unrelated in-memory favorites', () => {
   const result = store.remove('quote-b');
   assert.equal(writes, 1);
   assert.equal(result.persistenceAvailable, false);
+  assert.deepEqual(result.failure, {
+    operation: 'write',
+    message: 'quota',
+  });
   assert.deepEqual([...result.favorites], ['quote-a']);
+});
+
+test('consecutive failed writes retain independent in-memory mutations', () => {
+  const storage = createStorage();
+  storage.setItem = () => {
+    throw new Error('quota exceeded');
+  };
+  const store = createFavoritesStore({ storage, knownQuoteIds });
+
+  store.load();
+  const firstAdd = store.add('quote-a');
+  const secondAdd = store.add('quote-b');
+  const removeSecond = store.remove('quote-b');
+
+  assert.deepEqual([...firstAdd.favorites], ['quote-a']);
+  assert.deepEqual([...secondAdd.favorites].sort(), ['quote-a', 'quote-b']);
+  assert.deepEqual([...removeSecond.favorites], ['quote-a']);
+  assert.equal(store.isFavorite('quote-a'), true);
+  assert.equal(store.isFavorite('quote-b'), false);
+  assert.deepEqual(removeSecond.failure, {
+    operation: 'write',
+    message: 'quota exceeded',
+  });
 });

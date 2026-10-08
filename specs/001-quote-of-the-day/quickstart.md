@@ -94,3 +94,14 @@ data and communicates a non-blocking warning when persistence is unavailable.
   distinct favorite states, and readable focus/action controls. Accessibility-tree inspection after
   interaction confirmed updated quote content, favorite state, and status messaging.
 - Production code performs no network requests and contains no backend or external quote dependency.
+
+## Convergence validation evidence — 2026-10-08
+
+- `npm run test:all` passed the Prettier formatting check, ESLint static analysis, 19 unit tests,
+  and 16 Chromium browser tests with zero failures.
+- Storage regressions distinguish read and write failures and preserve independent in-memory
+  favorites across consecutive failed writes.
+- Twenty initial-load samples met the two-second target in at least 95% of runs, and twenty
+  New quote samples met the one-second target in at least 95% of runs.
+- The development dependency audit reported zero known vulnerabilities and is recorded in
+  [research.md](research.md).

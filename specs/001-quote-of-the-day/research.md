@@ -101,3 +101,22 @@ scans complement rather than replace explicit keyboard and state assertions.
 **Alternatives considered**: DOM emulation with a larger unit-test framework was rejected as extra
 configuration for this small app. Manual browser testing alone fails the constitution's repeatable
 automated-testing requirement.
+
+## Development dependency audit
+
+**Audit date**: 2026-10-08
+
+| Package | Resolved version | Necessity | Maintenance evidence | License | Operational cost |
+|---------|------------------|-----------|----------------------|---------|------------------|
+| `@playwright/test` | 1.63.0 | Exercises real browser behavior that unit tests cannot verify: DOM integration, native keyboard behavior, focus, `localStorage`, reflow, and end-to-end performance. | The upstream npm metadata identified 1.64.0 as the latest release and showed a modification on the audit date. The resolved version is one minor release behind and remains within the declared compatible range. Source: `microsoft/playwright`. | Apache-2.0 | Development-only. It adds the browser runner and transitive packages, starts one local static server, and runs the routine Chrome project serially. The configuration uses installed Chrome, so this project does not require a bundled production browser or add runtime code. |
+| `@axe-core/playwright` | 4.13.0 | Adds automated A/AA checks to the same real-browser workflows; explicit keyboard and state assertions remain separate because axe cannot replace them. | The resolved version matched the latest npm release, whose metadata showed a modification on the audit date. Source: `dequelabs/axe-core-npm`. | MPL-2.0 | Development-only and loaded only by accessibility tests. It reuses Playwright pages and adds in-page scans without changing the shipped application. |
+
+**Security evidence**: `npm audit --json` reported zero known vulnerabilities at all severities
+across 85 resolved development packages on 2026-10-08. The lockfile records the audited dependency
+graph for reproducible installation. No package in this audit is a production dependency.
+
+**Decision**: Retain both packages. Their browser and accessibility coverage addresses explicit UI
+contracts that the Node test runner cannot cover, both show active upstream publication, their
+licenses are acceptable for development tooling, and their cost stays outside the dependency-free
+runtime. Review Playwright's next compatible update during routine dependency maintenance rather
+than changing the browser runner during this convergence pass.
