@@ -228,3 +228,11 @@ conflict.
 - Do not create a backend, external quote integration, cross-device synchronization, or separate
   favorites-list view.
 - Commit after each task or cohesive task group and retain failing-before-passing test evidence.
+
+## Phase 7: Convergence
+
+- [ ] T026 CRITICAL add documented formatting, linting, and static-analysis commands to `package.json` and `README.md`, include them in `test:all`, and commit any required tool configuration and lockfile updates per Constitution V / Engineering Standards (missing)
+- [ ] T027 CRITICAL audit Playwright and axe for necessity, maintenance status, known vulnerabilities, licenses, and operational cost, then record the evidence in `specs/001-quote-of-the-day/research.md` per Constitution Engineering Standards (missing)
+- [ ] T028 CRITICAL preserve safe actionable read-versus-write failure context through `src/favorites.js` and `src/app.js`, with assertions in `tests/unit/favorites.test.js` and `tests/e2e/quote-page.spec.js`, per Constitution Engineering Standards (contradicts)
+- [ ] T029 add regression coverage and fix `src/favorites.js` so multiple in-memory favorites and removals remain independent across consecutive readable-storage/write-failure mutations per T019 / plan: graceful storage failure (partial)
+- [ ] T030 add repeatable initial-load and new-quote timing samples in `tests/e2e/quote-page.spec.js` that enforce the two-second and one-second thresholds for at least 95% of measured runs per SC-001 / SC-002 (partial)
